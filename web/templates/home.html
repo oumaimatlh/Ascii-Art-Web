@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+        <h1>
+            ASCII ART WEB 
+        </h1>
+        <form action="/ascii-art" method="POST">
+    
+         
+
+            <textarea  name="content" placeholder="Tapez ....."></textarea>
+
+            <br><br>
+
+            <label>
+                Choisir Type  d'Ascii Art
+            </label>
+
+            <br><br>
+
+            <label>Standard</label><input type="radio" name="types" value="standard"/>
+            <label>Shadow</label><input type="radio" name="types" value="shadow"/>
+            <label>Thinkertoy</label><input type="radio" name="types" value="thinkertoy"/>
+
+        
+            <br><br>
+            <input type="submit" value="Afficher" />
+        </form>
+
+        <br><br>
+
+        <div>
+            {{if .result}}
+                <pre>{{.result}}</pre>
+            {{end}}
+
+        </div>
+
+
+        {{if .error}}
+                <p style="color:red">{{.error}}</p>
+        {{end}}
+       
+</body>
+</html>
