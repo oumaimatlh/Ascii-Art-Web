@@ -1,41 +1,42 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 	"text/template"
 )
 
-
 func AsciiController(w http.ResponseWriter, r *http.Request) {
 	var errorMsg string
 
 	if r.Method != http.MethodPost {
-		fmt.Println("Testing")
-		http.Error(w, "400", http.StatusMethodNotAllowed)
+		http.Error(w, "405", http.StatusMethodNotAllowed)
 		return
 	}
 
 	r.ParseForm()
 	inputText := r.PostForm.Get("content")
 
-	if strings.TrimSpace(inputText) == "" {
+	if inputText == "" {
+		w.WriteHeader(http.StatusBadRequest)
 		errorMsg = "Vous devez taper quelque chose..."
 	} else {
 		for _, r := range inputText {
 			if !(r >= 32 && r <= 126 || r == 13 || r == 10) {
-				errorMsg = "Input non valide : les caractères doivent être en ASCII 32-126"
+				w.WriteHeader(http.StatusBadRequest)
+				errorMsg = "Input non validée : les caractères doivent être en ASCII 32-126"
 				break
 			}
 		}
 	}
 	if len(inputText) >= 3000 {
-		errorMsg = "Votre Text est dépassée 3000 caractéres"
+		w.WriteHeader(http.StatusBadRequest)
+		errorMsg = "Votre Text a dépassée 3000 caractéres"
 	}
 
 	font := r.PostForm.Get("types")
 	if errorMsg == "" && font == "" {
+		w.WriteHeader(http.StatusBadRequest)
 		errorMsg = "Vous devez choisir un Art"
 	}
 
@@ -48,13 +49,18 @@ func AsciiController(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	// handle new line at the beginning
+	if strings.HasPrefix(result, "\n") {
+		result = "\n" + result
+	}
 
 	data := map[string]string{
+		"text":   inputText,
 		"result": result,
 		"error":  errorMsg,
 	}
 
-	template, e := template.ParseFiles("web/templates/home.html")
+	template, e := template.ParseFiles("./templates/home.html")
 	if e != nil {
 		http.Error(w, "404", http.StatusNotFound)
 		return
@@ -64,5 +70,4 @@ func AsciiController(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "500", http.StatusInternalServerError)
 		return
 	}
-
 }

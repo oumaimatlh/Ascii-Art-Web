@@ -1,18 +1,21 @@
 package app
 
 import (
-	routes "ASCII-ART-WEB/internal/router"
+	"ASCII-ART-WEB/handlers"
 	"fmt"
 	"net/http"
 )
 
 func App() {
 
-	r := routes.Router()
 	fmt.Println("Serveur lancé sur : http://localhost:8080")
 
+	
+	http.HandleFunc("/", handlers.Home)
+	http.HandleFunc("/ascii-art", handlers.AsciiController)
 
-	err := http.ListenAndServe(":8080", r)
+
+	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Println("Erreur:", err)
 	}
